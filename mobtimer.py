@@ -21,7 +21,7 @@ class DefiningTheMob:
     def __init__(self, parent, my_config):
         top = self.top = tk.Toplevel(parent)
 
-        self.myLabel = tk.Label(top, text='Enter comma separated list of mom members below')
+        self.myLabel = tk.Label(top, text='Enter comma separated list of Mob members below')
         self.myLabel.pack()
 
         self.myEntryBox = tk.Entry(top)
@@ -195,7 +195,7 @@ class App:
 #
 
 # only used to seed the config system
-defaultMob = ['brendan', 'hoff', 'brian', 'balog']
+defaultMob = ['Brendan', 'Hoff', 'Brian', 'Balog']
 default_timer_len = 900
 
 # todo refactor
