@@ -75,7 +75,7 @@ class MobDriver:
             self.index = 0
 
         self.message.set(self.navigator_list[self.index] + " step right up to drive")
-        self.navigatorLabel = tk.Label(self.top, textvariable=self.message, font=self.label_font, bg='black',
+        self.navigatorLabel = tk.Label(self.top, textvariable=self.message, font=self.label_font, bg='white',
                                        fg='blue', relief='raised', bd=3)
         self.navigatorLabel.pack()
         self.mySubmitButton = tk.Button(self.top, text='Get Mobbing', command=self.done)
@@ -93,6 +93,7 @@ class App:
         self.time_str = tk.StringVar()
         self.firsttime = True
         self.timerControl = Queue.Queue()
+        self.paused = False
 
         # create the time display label, give it a large font
         # label auto-adjusts to the font
@@ -102,8 +103,9 @@ class App:
 
         # create start,stop, and mob buttons
         # pack() positions the buttons below the label
-        tk.Button(root, text='Counter Start', command=self.count_down,bg='black',fg='blue').pack()
+        tk.Button(root, text='Counter Start', command=self.start_timer).pack()
         tk.Button(root, text='Counter Stop', command=self.stop_timer).pack()
+        tk.Button(root, text='Counter Pause', command=self.pause_timer).pack()
         tk.Button(root, text='Configuration', command=self.on_mob_click).pack()
         tk.Button(root, text='Change Driver', command=self.on_change_driver).pack()
 
@@ -125,32 +127,53 @@ class App:
     def count_down(self):
         # clear any lingering control messages
         self.timerControl.queue.clear()
+        my_time_countdown = my_config['timer_len']
 
         if self.firsttime:
             self.firsttime = False
             self.on_change_driver()
 
-        for t in range(my_config['timer_len'], -1, -1):
+        #for t in range(my_config['timer_len'], -1, -1):
+        while my_time_countdown > -1:
             # format as 2 digit integers, fills with zero to the left
             # divmod() gives minutes, seconds
-            sf = "{:02d}:{:02d}".format(*divmod(t, 60))
+            #sf = "{:02d}:{:02d}".format(*divmod(t, 60))
+            sf = "{:02d}:{:02d}".format(*divmod(my_time_countdown, 60))
             self.time_str.set(sf)
             self.root.update()
             # delay one second
+            print "click"
+            time.sleep(1)
+            if not self.paused:
+                my_time_countdown -= 1
+
             try:
-                msg = self.timerControl.get(True, 1)
+                print "check queue"
+                msg = self.timerControl.get(False)
                 if msg is not None:
+                    self.paused = False
                     self.reset_timer()
                     return
             except:
                 pass
-
         self.reset_timer()
         mobcontrol.new_navigator()
 
     def stop_timer(self):
         print("Sending stop")
         self.timerControl.put("stop")
+
+
+    def pause_timer(self):
+        self.paused = True
+
+    def start_timer(self):
+        if self.paused:
+            #restart paused timer
+            self.paused = False
+        else:
+            #start new timer
+            self.count_down()
 
     def on_closing(self):
         # minimize before closing
