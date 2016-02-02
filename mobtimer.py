@@ -75,7 +75,7 @@ class MobDriver:
             self.index = 0
 
         self.message.set(self.navigator_list[self.index] + " step right up to drive")
-        self.navigatorLabel = tk.Label(self.top, textvariable=self.message, font=self.label_font, bg='white',
+        self.navigatorLabel = tk.Label(self.top, textvariable=self.message, font=self.label_font, bg='black',
                                        fg='blue', relief='raised', bd=3)
         self.navigatorLabel.pack()
         self.mySubmitButton = tk.Button(self.top, text='Get Mobbing', command=self.done)
@@ -102,9 +102,7 @@ class App:
 
         # create start,stop, and mob buttons
         # pack() positions the buttons below the label
-        tk.Button(root, text='Counter Start', command=self.count_down).pack()
-        # stop simply exits root window
-        # tk.Button(root, text='Count Stop', command=root.destroy).pack()
+        tk.Button(root, text='Counter Start', command=self.count_down,bg='black',fg='blue').pack()
         tk.Button(root, text='Counter Stop', command=self.stop_timer).pack()
         tk.Button(root, text='Configuration', command=self.on_mob_click).pack()
         tk.Button(root, text='Change Driver', command=self.on_change_driver).pack()
