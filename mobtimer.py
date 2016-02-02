@@ -16,15 +16,6 @@ import time
 import Queue
 import random
 
-timerControl = Queue.Queue()
-defaultMob = "brendan,hoff,brian,balog"
-my_config = shelve.open("configuration.py")
-
-
-# class SwitchDrivers:
-#    def __init__(self, parent):
-
-
 
 
 
@@ -60,6 +51,8 @@ class MobDriver:
         self.update_list(list_of_mob_members)
         random.shuffle(self.navigator_list)
         self.index = 0;
+        if my_config.has_key('timer_len') == False:
+            my_config['timer_len'] = default_timer_len
 
     def update_list(self, list_of_mob_members):
         self.navigator_list = list_of_mob_members
@@ -91,6 +84,8 @@ class App:
         #self.root = tk.Tk()
         self.root = main_window
         self.time_str = tk.StringVar()
+        self.firsttime= True
+        self.timerControl = Queue.Queue()
 
         # create the time display label, give it a large font
         # label auto-adjusts to the font
@@ -113,10 +108,13 @@ class App:
         self.root.mainloop()
 
     def count_down(self):
-        timerControl.queue.clear()
-        mobcontrol.new_navigator()
-        self.root.wait_window(mobcontrol.top)
-        for t in range(2, -1, -1):
+        self.timerControl.queue.clear()
+        if self.firsttime:
+            self.firsttime = False
+            mobcontrol.new_navigator()
+            self.root.wait_window(mobcontrol.top)
+
+        for t in range(my_config['timer_len'], -1, -1):
             # format as 2 digit integers, fills with zero to the left
             # divmod() gives minutes, seconds
             sf = "{:02d}:{:02d}".format(*divmod(t, 60))
@@ -126,16 +124,17 @@ class App:
             # delay one second
             print "ping"
             try:
-                msg = timerControl.get(True, 1)
+                msg = self.timerControl.get(True, 1)
                 if msg is not None:
                     return
             except:
                 pass
+        mobcontrol.new_navigator()
 
 
     def stop_timer(self):
         print("Sending stop")
-        timerControl.put("stop")
+        self.timerControl.put("stop")
 
 
     def on_closing(self):
@@ -154,93 +153,27 @@ class App:
         mobcontrol.update_list(my_config['mob_list'])
 
 
-
-
-
-
-
-
-
-
-
-def count_down():
-    timerControl.queue.clear()
-    mobcontrol.new_navigator()
-    root.wait_window(mobcontrol.top)
-    for t in range(2, -1, -1):
-        # format as 2 digit integers, fills with zero to the left
-        # divmod() gives minutes, seconds
-        sf = "{:02d}:{:02d}".format(*divmod(t, 60))
-        # print(sf)  # test
-        time_str.set(sf)
-        root.update()
-        # delay one second
-        print "ping"
-        try:
-            msg = timerControl.get(True, 1)
-            if msg is not None:
-                return
-        except:
-            pass
-
-    #Time's up, new navigator
-    mobcontrol.new_navigator()
-
-
-def stop_timer():
-    print("Sending stop")
-    timerControl.put("stop")
-
-
-def on_closing():
-    # minimize before closing
-    root.wm_state('iconic')
-    stop_timer()
-    # Hack to allow for exiting
-    time.sleep(2)
-    root.destroy()
-    print("Timer exiting")
-
-
-def on_mob_click():
-    inputDialog = DefiningTheMob(root, my_config)
-    root.wait_window(inputDialog.top)
-    mobcontrol.update_list(my_config['mob_list'])
-
 #
 #
 # Main
 #
 #
 
+#only used to seed the config system
+defaultMob = "brendan,hoff,brian,balog"
+default_timer_len = 900
+
+#todo refactor
+my_config = shelve.open("configuration.py")
 
 # create root/main window
+#todo refactor into app class
 root = tk.Tk()
 
 # Prepare the Mob
+#todo refactor into app class
 mobcontrol = MobDriver(root, my_config['mob_list'])
 
 App(root)
 exit(0)
 
-time_str = tk.StringVar()
-
-# create the time display label, give it a large font
-# label auto-adjusts to the font
-label_font = ('helvetica', 40)
-tk.Label(root, textvariable=time_str, font=label_font, bg='white',
-         fg='blue', relief='raised', bd=3).pack(fill='x', padx=5, pady=5)
-
-# create start,stop, and mob buttons
-# pack() positions the buttons below the label
-tk.Button(root, text='Count Start', command=count_down).pack()
-# stop simply exits root window
-# tk.Button(root, text='Count Stop', command=root.destroy).pack()
-tk.Button(root, text='Count Stop', command=stop_timer).pack()
-tk.Button(root, text='Mob List', command=on_mob_click).pack()
-
-# Catch the closing of the window via Xing out
-root.protocol("WM_DELETE_WINDOW", on_closing)
-
-# start the GUI event loop
-root.mainloop()
