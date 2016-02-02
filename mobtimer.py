@@ -39,7 +39,6 @@ class DefiningTheMob:
         self.mySubmitButton.pack()
 
     def send(self):
-        # global theMob
         raw = self.myEntryBox.get()
         themob = raw.split(',')
         my_config['mob_list'] = themob
@@ -56,7 +55,7 @@ class MobDriver:
         self.label_font = ('helvetica', 40)
         self.message = tk.StringVar()
 
-        # suppress instance attrivate defined outside of __init__ warnings
+        # suppress instance attribute defined outside of __init__ warnings
         self.top = None
         self.navigatorLabel = None
         self.mySubmitButton = None
@@ -133,11 +132,9 @@ class App:
             self.firsttime = False
             self.on_change_driver()
 
-        #for t in range(my_config['timer_len'], -1, -1):
         while my_time_countdown > -1:
             # format as 2 digit integers, fills with zero to the left
             # divmod() gives minutes, seconds
-            #sf = "{:02d}:{:02d}".format(*divmod(t, 60))
             sf = "{:02d}:{:02d}".format(*divmod(my_time_countdown, 60))
             self.time_str.set(sf)
             self.root.update()
@@ -159,10 +156,10 @@ class App:
         self.reset_timer()
         mobcontrol.new_navigator()
 
+    #todo Refactor to decide how we want to signal the countdown function
     def stop_timer(self):
         print("Sending stop")
         self.timerControl.put("stop")
-
 
     def pause_timer(self):
         self.paused = True
