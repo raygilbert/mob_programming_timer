@@ -21,28 +21,24 @@ class DefiningTheMob:
     def __init__(self, parent, my_config):
         top = self.top = tk.Toplevel(parent)
 
-        self.myLabel = tk.Label(top, text='Enter comma separated list of Mob members below')
-        self.myLabel.pack()
+        tk.Label(top, text='Enter comma separated list of Mob members below').pack()
+        self.myMoblistEntry = tk.Entry(top,width=100)
+        self.myMoblistEntry.pack()
+        self.myMoblistEntry.insert(0, ', '.join(my_config['mob_list']))
 
-        self.myEntryBox = tk.Entry(top)
-        self.myEntryBox.pack()
-        self.myEntryBox.insert(0, ', '.join(my_config['mob_list']))
+        tk.Label(top, text='Enter timer interval in seconds').pack()
+        self.myTimerEntry = tk.Entry(top)
+        self.myTimerEntry.pack()
+        self.myTimerEntry.insert(0, my_config['timer_len'])
 
-        self.myLabel2 = tk.Label(top, text='Enter timer interval in seconds')
-        self.myLabel2.pack()
-
-        self.myEntryBox2 = tk.Entry(top)
-        self.myEntryBox2.pack()
-        self.myEntryBox2.insert(0, my_config['timer_len'])
-
-        self.mySubmitButton = tk.Button(top, text='Submit', command=self.send)
+        self.mySubmitButton = tk.Button(top, text='Submit', command=self.submit)
         self.mySubmitButton.pack()
 
-    def send(self):
-        raw = self.myEntryBox.get()
+    def submit(self):
+        raw = self.myMoblistEntry.get()
         themob = raw.split(',')
         my_config['mob_list'] = themob
-        timer_val = self.myEntryBox2.get()
+        timer_val = self.myTimerEntry.get()
         my_config['timer_len'] = int(timer_val)
         self.top.destroy()
 
@@ -139,13 +135,13 @@ class App:
             self.time_str.set(sf)
             self.root.update()
             # delay one second
-            print "click"
+            #print "click"
             time.sleep(1)
             if not self.paused:
                 my_time_countdown -= 1
 
             try:
-                print "check queue"
+                #print "check queue"
                 msg = self.timerControl.get(False)
                 if msg is not None:
                     self.paused = False
@@ -195,7 +191,7 @@ class App:
 #
 
 # only used to seed the config system
-defaultMob = ['Brendan', 'Hoff', 'Brian', 'Balog']
+defaultMob = ['Jane', 'Joe', 'Julie', 'Jack']
 default_timer_len = 900
 
 # todo refactor
