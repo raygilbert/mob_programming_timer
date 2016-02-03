@@ -81,14 +81,14 @@ class MobDriver:
         return
 
 
-class App:
+class MobTimer:
     def __init__(self, main_window):
         self.root = main_window
         self.root.title('Mob Programming Timer')
         self.time_str = tk.StringVar()
         self.firsttime = True
-        self.timerControl = Queue.Queue()
         self.paused = False
+        self.stopped = False
 
         # create the time display label, give it a large font
         # label auto-adjusts to the font
@@ -120,8 +120,6 @@ class App:
         self.root.update()
 
     def count_down(self):
-        # clear any lingering control messages
-        self.timerControl.queue.clear()
         my_time_countdown = my_config['timer_len']
 
         if self.firsttime:
@@ -135,27 +133,21 @@ class App:
             self.time_str.set(sf)
             self.root.update()
             # delay one second
-            #print "click"
-            time.sleep(1)
+            for ll in range (0,4):
+                if self.stopped:
+                    self.paused = self.stopped = False
+                    self.reset_timer()
+                    return
+                time.sleep(0.250)
+
             if not self.paused:
                 my_time_countdown -= 1
 
-            try:
-                #print "check queue"
-                msg = self.timerControl.get(False)
-                if msg is not None:
-                    self.paused = False
-                    self.reset_timer()
-                    return
-            except:
-                pass
         self.reset_timer()
         mobcontrol.new_navigator()
 
-    #todo Refactor to decide how we want to signal the countdown function
     def stop_timer(self):
-        print("Sending stop")
-        self.timerControl.put("stop")
+        self.stopped = True
 
     def pause_timer(self):
         self.paused = True
@@ -173,10 +165,8 @@ class App:
         # self.root.wm_state('iconic')
         self.root.withdraw()
         self.stop_timer()
-        # Hack to allow for exiting
-        time.sleep(2)
-        self.root.destroy()
-        print("Timer exiting")
+        time.sleep(1)
+        self.root.quit()
 
     def on_mob_click(self):
         inputdialog = DefiningTheMob(self.root, my_config)
@@ -210,5 +200,8 @@ root = tk.Tk()
 # todo refactor into app class
 mobcontrol = MobDriver(root, my_config['mob_list'])
 
-App(root)
+MobTimer(root)
+root.destroy()
+
+print("Timer exiting")
 exit(0)
