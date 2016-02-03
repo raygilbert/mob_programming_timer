@@ -13,7 +13,6 @@ except ImportError:
     import tkinter as tk
 import shelve
 import time
-import Queue
 import random
 
 
@@ -22,7 +21,7 @@ class DefiningTheMob:
         top = self.top = tk.Toplevel(parent)
 
         tk.Label(top, text='Enter comma separated list of Mob members below').pack()
-        self.myMoblistEntry = tk.Entry(top,width=100)
+        self.myMoblistEntry = tk.Entry(top, width=100)
         self.myMoblistEntry.pack()
         self.myMoblistEntry.insert(0, ', '.join(my_config['mob_list']))
 
@@ -72,7 +71,7 @@ class MobDriver:
         self.message.set(self.navigator_list[self.index] + " step right up to drive")
         self.navigatorLabel = tk.Label(self.top, textvariable=self.message, font=self.label_font, bg='white',
                                        fg='blue', relief='raised', bd=3)
-        padding = self.top.winfo_screenmmheight()/2
+        padding = self.top.winfo_screenmmheight() / 2
         self.navigatorLabel.pack(pady=padding)
         self.mySubmitButton = tk.Button(self.top, text='Get Mobbing', command=self.done)
         self.mySubmitButton.pack()
@@ -134,7 +133,7 @@ class MobTimer:
             self.time_str.set(sf)
             self.root.update()
             # delay one second
-            for ll in range (0,4):
+            for ll in range(0, 4):
                 if self.stopped:
                     self.paused = self.stopped = False
                     self.reset_timer()
@@ -155,10 +154,10 @@ class MobTimer:
 
     def start_timer(self):
         if self.paused:
-            #restart paused timer
+            # restart paused timer
             self.paused = False
         else:
-            #start new timer
+            # start new timer
             self.count_down()
 
     def on_closing(self):
