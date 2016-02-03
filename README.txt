@@ -1,1 +1,1 @@
-Basic mob programming timer in Python.  
+Basic mob programming timer in Python.

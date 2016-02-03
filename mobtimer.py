@@ -72,7 +72,8 @@ class MobDriver:
         self.message.set(self.navigator_list[self.index] + " step right up to drive")
         self.navigatorLabel = tk.Label(self.top, textvariable=self.message, font=self.label_font, bg='white',
                                        fg='blue', relief='raised', bd=3)
-        self.navigatorLabel.pack()
+        padding = self.top.winfo_screenmmheight()/2
+        self.navigatorLabel.pack(pady=padding)
         self.mySubmitButton = tk.Button(self.top, text='Get Mobbing', command=self.done)
         self.mySubmitButton.pack()
 
