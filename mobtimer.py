@@ -17,18 +17,27 @@ import random
 
 
 class DefiningTheMob:
+    """ GUI to enter parameters that define the Mob and how they work
+
+
+    :param parent: Parent window
+    :param my_config: Shelve object
+    :return: None
+    """
     def __init__(self, parent, my_config):
+
         top = self.top = tk.Toplevel(parent)
+        self.config = my_config
 
         tk.Label(top, text='Enter comma separated list of Mob members below').pack()
         self.myMoblistEntry = tk.Entry(top, width=100)
         self.myMoblistEntry.pack()
-        self.myMoblistEntry.insert(0, ', '.join(my_config['mob_list']))
+        self.myMoblistEntry.insert(0, ', '.join(self.config['mob_list']))
 
         tk.Label(top, text='Enter timer interval in seconds').pack()
         self.myTimerEntry = tk.Entry(top)
         self.myTimerEntry.pack()
-        self.myTimerEntry.insert(0, my_config['timer_len'])
+        self.myTimerEntry.insert(0, self.config['timer_len'])
 
         self.mySubmitButton = tk.Button(top, text='Submit', command=self.submit)
         self.mySubmitButton.pack()
@@ -36,9 +45,9 @@ class DefiningTheMob:
     def submit(self):
         raw = self.myMoblistEntry.get()
         themob = raw.split(',')
-        my_config['mob_list'] = themob
+        self.config['mob_list'] = themob
         timer_val = self.myTimerEntry.get()
-        my_config['timer_len'] = int(timer_val)
+        self.config['timer_len'] = int(timer_val)
         self.top.destroy()
 
 
@@ -82,14 +91,18 @@ class MobDriver:
 
 
 class MobTimer:
-    def __init__(self, main_window):
+    """ Main class of the application
+
+    """
+    def __init__(self, main_window, configuration_shelve):
         self.root = main_window
+        self.config = configuration_shelve
         self.root.title('Mob Programming Timer')
         self.time_str = tk.StringVar()
         self.firsttime = True
         self.paused = False
         self.stopped = False
-
+        self.mobdriver   = MobDriver(root, self.config['mob_list'])
         # create the time display label, give it a large font
         # label auto-adjusts to the font
         label_font = ('helvetica', 40)
@@ -115,12 +128,12 @@ class MobTimer:
         self.root.wait_window(mobcontrol.top)
 
     def reset_timer(self):
-        sf = "{:02d}:{:02d}".format(*divmod(my_config['timer_len'], 60))
+        sf = "{:02d}:{:02d}".format(*divmod(self.config['timer_len'], 60))
         self.time_str.set(sf)
         self.root.update()
 
     def count_down(self):
-        my_time_countdown = my_config['timer_len']
+        my_time_countdown = self.config['timer_len']
 
         if self.firsttime:
             self.firsttime = False
@@ -169,9 +182,9 @@ class MobTimer:
         self.root.quit()
 
     def on_mob_click(self):
-        inputdialog = DefiningTheMob(self.root, my_config)
+        inputdialog = DefiningTheMob(self.root, self.config)
         self.root.wait_window(inputdialog.top)
-        mobcontrol.update_list(my_config['mob_list'])
+        mobcontrol.update_list(self.config['mob_list'])
 
 
 #
@@ -180,17 +193,17 @@ class MobTimer:
 #
 #
 
+# Establish default configuration if needed
 # only used to seed the config system
 defaultMob = ['Jane', 'Joe', 'Julie', 'Jack']
 default_timer_len = 900
 
-# todo refactor
-my_config = shelve.open("mobtimer_config")
-if not my_config.has_key('timer_len'):
-    my_config['timer_len'] = int(default_timer_len)
+app_config = shelve.open("mobtimer_config")
+if not app_config.has_key('timer_len'):
+    app_config['timer_len'] = int(default_timer_len)
 
-if not my_config.has_key('mob_list'):
-    my_config['mob_list'] = defaultMob
+if not app_config.has_key('mob_list'):
+    app_config['mob_list'] = defaultMob
 
 # create root/main window
 # todo refactor into app class
@@ -198,9 +211,9 @@ root = tk.Tk()
 
 # Prepare the Mob
 # todo refactor into app class
-mobcontrol = MobDriver(root, my_config['mob_list'])
+mobcontrol = MobDriver(root, app_config['mob_list'])
 
-MobTimer(root)
+MobTimer(root, app_config)
 root.destroy()
 
 print("Timer exiting")
