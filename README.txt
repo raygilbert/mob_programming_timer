@@ -1,1 +1,1 @@
-Basic mob programming timer in Python.
+Basic cross platform mob programming timer to help you get started with Mobbing.
