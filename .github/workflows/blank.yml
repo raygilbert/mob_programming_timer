@@ -34,3 +34,28 @@ jobs:
       run: |
         echo Add other actions to build,
         echo test, and deploy your project.
+
+name: Lambda
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '*/5 * * * *'
+    jobs:
+      # This workflow contains a single job called "build"
+      build:
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
+
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        - uses: actions/checkout@v2
+
+        # Runs a single command using the runners shell
+        - name: Run a one-line script
+          run: echo Hello, LAMBDA!
+
+        # Runs a set of commands using the runners shell
+        - name: Run a multi-line script
+          run: |
+            echo Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.,
+            echo test, and deploy your project.
